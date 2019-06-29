@@ -10,24 +10,23 @@ const NotFoundError = require('../errors/NotFound');
 module.exports = {
   create: async function(req, res) {
     try {
-      const publicationAttb = _.pick(
-        req.body,
-        'author',
-        'body',
-        'title',
-      );
+      const publicationAttb = _.pick(req.body, 'author', 'body', 'title');
 
       if (!isPublicationValid(publicationAttb)) {
         return res.badRequest('Must provide a valid publication object');
       }
-      const authorExists = await Author.findOne({ email: publicationAttb.author });
+      const authorExists = await Author.findOne({
+        email: publicationAttb.author,
+      });
 
       if (!authorExists) {
         return res.badRequest("The author email doesn't exists");
       }
       publicationAttb.author = authorExists.id;
       console.log(publicationAttb);
-      const pub = await Publication.create(publicationAttb).meta({ fetch: true });
+      const pub = await Publication.create(publicationAttb).meta({
+        fetch: true,
+      });
       res.ok(pub);
     } catch (err) {
       return res.serverError(err);
@@ -61,7 +60,7 @@ module.exports = {
         Publication.find()
           .limit(limit)
           .skip(skip)
-          .sort('createdAt DESC')
+          .sort('createdAt DESC'),
       ]);
       const publications = allResponses[1];
       if (!publications) {
@@ -84,14 +83,12 @@ module.exports = {
     try {
       const allResponses = await Promise.all([
         Publication.count(),
-        Publication.find({author: authorId})
+        Publication.find({ author: authorId })
           .limit(limit)
           .skip(skip)
-          .sort('createdAt DESC')
+          .sort('createdAt DESC'),
       ]);
       const publications = allResponses[1];
-      console.log(publications);
-      console.log(authorId);
       if (!publications) {
         return res.badRequest('There is no publications related to author');
       }
@@ -122,14 +119,11 @@ module.exports = {
 
   updatePublication: async function(req, res) {
     const id = req.param('id');
-    const publicationAttb = _.pick(
-      req.body,
-      'author',
-      'body',
-      'title',
-    );
+    const publicationAttb = _.pick(req.body, 'author', 'body', 'title');
     try {
-      const authorExists = await Author.findOne({ email: publicationAttb.author });
+      const authorExists = await Author.findOne({
+        email: publicationAttb.author,
+      });
       if (!authorExists) {
         return res.badRequest("The author email doesn't exists");
       }
@@ -141,15 +135,10 @@ module.exports = {
       return res.serverError(err.message);
     }
   },
-
 };
 
 function isPublicationValid(pub) {
-  const pubAttb = [
-    'author',
-    'body',
-    'title',
-  ];
+  const pubAttb = ['author', 'body', 'title'];
   for (const attb of pubAttb) {
     if (!pub[attb]) {
       return false;
@@ -157,4 +146,3 @@ function isPublicationValid(pub) {
   }
   return true;
 }
-

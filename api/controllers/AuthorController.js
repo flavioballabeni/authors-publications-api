@@ -6,21 +6,17 @@
  */
 const BadDataError = require('../errors/BadData');
 const NotFoundError = require('../errors/NotFound');
+const _ = require('underscore');
 
 module.exports = {
   create: async function(req, res) {
     try {
-      const authorAttb = _.pick(
-        req.body,
-        'name',
-        'email',
-        'dateOfBirth'
-      );
+      const authorAttb = _.pick(req.body, 'name', 'email', 'dateOfBirth');
       if (!isAuthorValid(authorAttb)) {
         return res.badRequest('Must provide a valid author object');
       }
-      const authorExists = await Author.find({email: authorAttb.email});
-      if (authorExists) {
+      const authorExists = await Author.find({ email: authorAttb.email });
+      if (!_.isEmpty(authorExists)) {
         return res.badRequest('This author already exits');
       }
       const author = await Author.create(authorAttb).meta({ fetch: true });
@@ -57,7 +53,7 @@ module.exports = {
         Author.find()
           .limit(limit)
           .skip(skip)
-          .sort('name ASC')
+          .sort('name ASC'),
       ]);
       const authors = allResponses[1];
       if (!authors) {
@@ -93,12 +89,7 @@ module.exports = {
 
   updateAuthor: async function(req, res) {
     const id = req.param('id');
-    const authorAttb = _.pick(
-      req.body,
-      'name',
-      'email',
-      'dateOfBirth'
-    );
+    const authorAttb = _.pick(req.body, 'name', 'email', 'dateOfBirth');
     try {
       const authorUpdated = await Author.update(id)
         .set(authorAttb)
@@ -111,11 +102,7 @@ module.exports = {
 };
 
 function isAuthorValid(author) {
-  const authorAttb = [
-    'name',
-    'email',
-    'dateOfBirth'
-  ];
+  const authorAttb = ['name', 'email', 'dateOfBirth'];
   for (const attb of authorAttb) {
     if (!author[attb]) {
       return false;
