@@ -1,0 +1,44 @@
+# Serfe deploy for server API and frontend app
+version: '2'
+services:
+  redis:
+    container_name: ap_api_redis
+    image: "redis:alpine"    
+    ports:
+      - "6379:6379"
+  api:
+    image: node:8.16.0
+    container_name: ap_api_node
+    command: bash -c "npm install -g yarn && yarn install && npm run dev"
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app
+    env_file: .env
+    ports:
+      - "1337:1337"
+    links:
+      - db
+    depends_on:
+      - redis    
+  db:
+    image: postgres:10
+    container_name: ap_api_postgres
+    volumes_from:
+      - dbdata
+    expose:
+      - 5432
+  dbdata:
+    image: tianon/true
+    container_name: ap_api_data
+    volumes:
+      - ./data:/var/lib/postgresql/data
+  pgadmin:
+    links:
+      - db
+    image: thajeztah/pgadmin4
+    container_name: ap_api_pgadmin
+    volumes:
+       - /data/pgadmin:/root/.pgadmin
+    ports:
+      - "5050:5050"
+    restart: unless-stopped
