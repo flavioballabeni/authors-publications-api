@@ -16,8 +16,11 @@ module.exports = {
     },
     dateOfBirth: {
       type: 'number',
-      columnType: 'timestamptz',
       required: true,
+    },
+    publication: {
+      collection: 'Publication',
+      via: 'author',
     },
   },
 };

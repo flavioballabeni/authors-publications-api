@@ -51,6 +51,7 @@ module.exports = {
       const allResponses = await Promise.all([
         Author.count(),
         Author.find()
+          .populate('publication')
           .limit(limit)
           .skip(skip)
           .sort('name ASC'),
@@ -59,9 +60,6 @@ module.exports = {
       if (!authors) {
         return res.badRequest('There is no authors related to query');
       }
-      authors.forEach(async author => {
-        author.publication = await Publication.find({ author: author.id });
-      });
       return res.ok({
         data: authors,
         pagination: {
@@ -75,12 +73,15 @@ module.exports = {
 
   findById: async function(req, res) {
     const authorId = req.param('id');
+    if (!authorId) {
+      return res.notFound('Need provide an id param');
+    }
     try {
-      const [author] = await Author.find(authorId);
+      const [author] = await Author.find(authorId).populate('publication');
       if (!author) {
         return res.badRequest('There is no author related to the id');
       }
-      author.publication = await Publication.find({ author: author.id });
+      // author.publication = await Publication.find({ author: author.id });
       return res.ok(author);
     } catch (err) {
       return res.serverError(err);
@@ -88,10 +89,13 @@ module.exports = {
   },
 
   updateAuthor: async function(req, res) {
-    const id = req.param('id');
+    const authorId = req.param('id');
+    if (!authorId) {
+      return res.notFound('Need provide an id param');
+    }
     const authorAttb = _.pick(req.body, 'name', 'email', 'dateOfBirth');
     try {
-      const authorUpdated = await Author.update(id)
+      const authorUpdated = await Author.update(authorId)
         .set(authorAttb)
         .meta({ fetch: true });
       return res.ok(authorUpdated);

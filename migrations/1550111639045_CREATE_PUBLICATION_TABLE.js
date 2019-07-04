@@ -5,6 +5,7 @@ exports.up = pgm => {
       type: 'integer',
       references: 'author',
       notNull: true,
+      onDelete: 'cascade',
     },
     body: {
       type: 'string',

@@ -23,7 +23,6 @@ module.exports = {
         return res.badRequest("The author email doesn't exists");
       }
       publicationAttb.author = authorExists.id;
-      console.log(publicationAttb);
       const pub = await Publication.create(publicationAttb).meta({
         fetch: true,
       });
@@ -35,6 +34,9 @@ module.exports = {
 
   destroy: function(req, res) {
     const publicationId = req.param('id');
+    if (!publicationId) {
+      return res.notFound('Need provide an id param');
+    }
     Publication.findOne({ id: publicationId })
       .then(publication => {
         if (!publication) {
@@ -78,11 +80,14 @@ module.exports = {
   },
 
   findByAuthor: async function(req, res) {
-    const authorId = req.param('authorId');
-    const { skip = 0, limit = 10 } = req.query;
     try {
+      const authorId = req.param('authorId');
+      const { skip = 0, limit = 10 } = req.query;
+      if (!authorId) {
+        return res.notFound('Need provide an id param');
+      }
       const allResponses = await Promise.all([
-        Publication.count(),
+        Publication.count({ author: authorId }),
         Publication.find({ author: authorId })
           .limit(limit)
           .skip(skip)
@@ -104,8 +109,11 @@ module.exports = {
   },
 
   findById: async function(req, res) {
-    const publicationId = req.param('id');
     try {
+      const publicationId = req.param('id');
+      if (!publicationId) {
+        return res.notFound('Need provide an id param');
+      }
       const [publication] = await Publication.find(publicationId);
       if (!publication) {
         return res.badRequest('There is no publication related to the id');
@@ -118,15 +126,19 @@ module.exports = {
   },
 
   updatePublication: async function(req, res) {
-    const id = req.param('id');
-    const publicationAttb = _.pick(req.body, 'author', 'body', 'title');
     try {
+      const id = req.param('id');
+      if (!id) {
+        return res.notFound('Need provide an id param');
+      }
+      const publicationAttb = _.pick(req.body, 'author', 'body', 'title');
       const authorExists = await Author.findOne({
         email: publicationAttb.author,
       });
       if (!authorExists) {
         return res.badRequest("The author email doesn't exists");
       }
+      publicationAttb.author = authorExists.id;
       const publicationUpdated = await Publication.update(id)
         .set(publicationAttb)
         .meta({ fetch: true });

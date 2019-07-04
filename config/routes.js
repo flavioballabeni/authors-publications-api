@@ -36,20 +36,20 @@ module.exports.routes = {
   },*/
 
   //Author
-  "post /api/author": "AuthorController.create",
-  "get /api/author/:id": "AuthorController.findById",
-  "get /api/author": "AuthorController.findAll",
-  "patch /api/author/update/:id": "AuthorController.updateAuthor",
-  "delete /api/author/:id": "AuthorController.destroy",
+  'post /api/author': 'AuthorController.create',
+  'get /api/author/:id': 'AuthorController.findById',
+  'get /api/author': 'AuthorController.findAll',
+  'patch /api/author/update/:id': 'AuthorController.updateAuthor',
+  'delete /api/author/:id': 'AuthorController.destroy',
 
   //Publication
-  "post /api/publication": "PublicationController.create",
-  "get /api/publication/:id": "PublicationController.findById",
-  "get /api/publication/:authorId": "PublicationController.findByAuthor",
-  "get /api/publication": "PublicationController.findAll",
-  "patch /api/publication/:id": "PublicationController.updatePublication",
-  "delete /api/publication/:id": "PublicationController.destroy",
-
+  'post /api/publication': 'PublicationController.create',
+  'get /api/publication/:id': 'PublicationController.findById',
+  'get /api/publication/author/:authorId': 'PublicationController.findByAuthor',
+  'get /api/publication': 'PublicationController.findAll',
+  'patch /api/publication/update/:id':
+    'PublicationController.updatePublication',
+  'delete /api/publication/:id': 'PublicationController.destroy',
 
   /***************************************************************************
    *                                                                          *
