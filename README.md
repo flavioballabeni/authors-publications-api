@@ -1,4 +1,4 @@
-# people-movies-api
+# authors-publications-api
 
 A [Sails](http://sailsjs.org) application
 
@@ -37,9 +37,6 @@ module.exports = {
    }
 };
 ```
-###  system_settings:
-For the system to run, there are some mandatory values that need to exist on the system_settings table. There is no script to add them because their values depend on the environment. The keys that must be manually added are: 'PMK_MONTHLY_ID', 'PMK_SEMIANUALLY_ID', 'OCCUPATIONAL_MONTHLY_ID', 'OCCUPATIONAL_SEMIANUALLY_ID', 'RECAPTCHA_KEY', 'SUPPORT_EMAIL' with their respective values.
-
 There is a script to add all the automatic emails & their subject. To add them, include the ENV variable RUN_SETTINGS_SEEDERS (after running the app please remove this variable)
 
 ###  Migrations:
